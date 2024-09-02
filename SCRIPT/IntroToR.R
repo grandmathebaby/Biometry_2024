@@ -251,6 +251,8 @@ MontereyHigh
 MontereyHighCI<-SummaryByGroup[1,4]*1.96 #gives the value in row 1, column 4 and multiplies is by 1.96
 MontereyHighCI
 
+Monly <- mydata %>%
+  filter(Location == "Monterey")
 #Let's use standard errors instead of standard deviations. We'll do the same thing as
 #before, except with a more complex calculation for standard error
 SummaryByGroup <- mydata %>%
@@ -306,7 +308,7 @@ p<-ggplot(graphdata, aes(x=Location, y=meanLength)) #defines what x and y variab
 p<-p+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
            panel.background = element_blank(), axis.line = element_line(colour = "black"))
 #The above command gets rid of the gray background and the gridlines. Blech, who wants those?
-p<-p + geom_bar(stat="identity", color="dodgerblue2", fill="dodgerblue2", position="dodge", size=0.6) #what colors should the bars be?
+p<-p + geom_bar(stat="identity", color="burlywood", fill="maroon", position="dodge", size=0.6) #what colors should the bars be?
 p<-p + labs(x="Location", y="Length") #what are the labels for the axes?
 p<-p + geom_errorbar(aes(ymax=meanLength+se, ymin=meanLength-se), position=position_dodge(0.9), width=0.1) #add error bars
 
@@ -330,7 +332,7 @@ ggplot(graphdata2, aes(x=Location, y=meanLength, fill=factor(TidalHeight), group
   geom_bar(stat="identity", position="dodge", size=0.6) + #determines the bar width
   geom_errorbar(aes(ymax=meanLength+se, ymin=meanLength-se), stat="identity", position=position_dodge(width=0.9), width=0.1) + #adds error bars
   labs(x="Location", y="Snail Length", fill="TidalHeight") + #labels the x and y axes
-  scale_fill_manual(values=c("Low"="tomato","High"="dodgerblue2")) #fill colors for the bars
+  scale_fill_manual(values=c("Low"="maroon","High"="burlywood")) #fill colors for the bars
 
 #There are tons and tons of colors available in R. Google the R color palette for a complete set,
 #or check out https://colorbrewer2.org for curated sets of colors for different applications
