@@ -17,10 +17,11 @@ SDBottom
 VarianceTop<-var(Protozoa$Top, na.rm=TRUE)
 VarianceBottom<-var(Protozoa$Bottom)
 ##
-CITop<-t.test(Protozoa$Top, na.rm=TRUE)
-CIBottom<-t.test(Protozoa$Bottom)
+CITop<-MeanTop-qt(0.95,19)*SDTop
+CIBottom<-MeanBottom+qt(0.95,19)*SDBottom
+CITop
+CIBottom
 
-##-- Note added to doc can't tell how to make this online one number? 
 ##-- Question 3
 rm(list=ls())
 Gonad<- read.csv("Data/kelp bass gonad mass.csv")
