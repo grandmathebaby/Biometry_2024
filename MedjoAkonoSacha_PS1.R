@@ -21,7 +21,7 @@ CITop<-MeanTop-qt(0.95,19)*SDTop
 CIBottom<-MeanBottom+qt(0.95,19)*SDBottom
 CITop
 CIBottom
-
+##
 ##-- Question 3
 rm(list=ls())
 Gonad<- read.csv("Data/kelp bass gonad mass.csv")
