@@ -71,7 +71,9 @@ table(buzz$Species, buzz$Treatment)
 
 # And then let's have a look at how our focal variable is distributed
 # using the ggplot2 histogram function
-ggplot(buzz, aes(x=pollen_rem_est)) + geom_histogram()
+ggplot(buzz, aes(x=pollen_rem_est)) +
+  geom_histogram() +
+  annotate(x=MeanBottom, y=SDBottom, xmax=9, xmin=0, ymax=9, ymins=0 )
 
 # `geom_histogram()` defaults to breaking the data into 30 bins, but also throws
 # a warning advising you not to accept the default blindly. Take a look at how 

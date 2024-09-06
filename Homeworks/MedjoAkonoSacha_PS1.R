@@ -24,11 +24,12 @@ CIBottom
 ##
 library(tidyverse)
 library(car)
-ggplot(Protozoa, aes(x=mean(MeanBottom+MeanTop), y=MeanBottom, color=MeanTop, fill=MeanTop)) + 
-  geom_smooth(color="white", method="lm") +
-  geom_point() + 
-  facet_wrap("SDTop") +
-  theme_minimal()
+ggplot(Protozoa, aes(x=MeanTop, y=Top, fill=Top)) + 
+  geom_boxplot() + 
+  scale_fill_manual(values=c("#9bc9fa","maroon"), name="Density") +
+  scale_y_log10() + theme_bw() + 
+  labs(y="Mean", x="Density", title="Protozoa population density increases with food available") +
+  theme(legend.position="none")
 ##--???
 ##-- Question 3
 rm(list=ls())
