@@ -21,15 +21,23 @@ CITop<-MeanTop-qt(0.95,19)*SDTop
 CIBottom<-MeanBottom+qt(0.95,19)*SDBottom
 CITop
 CIBottom
-##
+##load packages
 library(tidyverse)
 library(car)
-ggplot(Protozoa, aes(x=MeanTop, y=Top, fill=Top)) + 
-  geom_boxplot() + 
-  scale_fill_manual(values=c("#9bc9fa","maroon"), name="Density") +
-  scale_y_log10() + theme_bw() + 
-  labs(y="Mean", x="Density", title="Protozoa population density increases with food available") +
-  theme(legend.position="none")
+##ggplot(Protozoa) + 
+#geom_boxplot(aes(x=Top, y=MeanTop)) + 
+#scale_fill_manual(values=c("#9bc9fa","maroon"), name="Density") +
+#scale_y_log10() + theme_bw() + 
+#labs(y="Mean", x="Density", title="Protozoa population density increases with food available") +
+#theme(legend.position="none")
+
+ggplot(Protozoa, aes(Top, MeanTop)) + 
+  geom_bar(stat = "identity", width=0.8, alpha=0.8) 
+  geom_errorbar(aes(ymin=MeanTop-SDTop, ymax=MeanTop+SDTop), width=0.2) 
+  
+ 
+
+
 ##--???
 ##-- Question 3
 rm(list=ls())
