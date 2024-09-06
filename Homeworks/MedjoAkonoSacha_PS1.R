@@ -21,7 +21,15 @@ CITop<-MeanTop-qt(0.95,19)*SDTop
 CIBottom<-MeanBottom+qt(0.95,19)*SDBottom
 CITop
 CIBottom
-##--
+##
+library(tidyverse)
+library(car)
+ggplot(Protozoa, aes(x=mean(MeanBottom+MeanTop), y=MeanBottom, color=MeanTop, fill=MeanTop)) + 
+  geom_smooth(color="white", method="lm") +
+  geom_point() + 
+  facet_wrap("SDTop") +
+  theme_minimal()
+##--???
 ##-- Question 3
 rm(list=ls())
 Gonad<- read.csv("Data/kelp bass gonad mass.csv")
