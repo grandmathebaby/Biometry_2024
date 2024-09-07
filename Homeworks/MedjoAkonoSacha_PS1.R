@@ -3,19 +3,28 @@
 rm(list=ls())
 Protozoa<- read.csv("Data/Protozoa.csv")
 View(Protozoa)
+##load packages
+library(tidyverse)
+library(car)
+library(psych)
 #Getting the stats
-describeBy(Protozoa, group=Protozoa$Sample)
+MeanTop<-mean(Protozoa$Top)
+MeanTop
+MeanBottom<-mean(Protozoa$Bottom)
+MeanBottom
 ##--
-Variance<-var(Protozoa, group=Sample, na.rm = TRUE)
+SDTop<-sd(Protozoa$Top)
+SDBottom<-(Protozoa$Top)
+##--
+Variance<-var(Protozoa$Density, na.rm = TRUE)
+Var
 
 VarianceBottom<-var(Protozoa$Density)
 ##--
 CITop<-MeanTop-qt(0.95,19)*SDTop
 CIBottom<-MeanBottom+qt(0.95,19)*SDBottom
 ##-- Question 2
-##load packages
-library(tidyverse)
-library(car)
+
 ##Making my dataset to work with
 
 
