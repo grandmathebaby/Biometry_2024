@@ -13,40 +13,60 @@ MeanTop
 MeanBottom<-mean(Protozoa$Bottom)
 MeanBottom
 ##--
-SDTop<-sd(Protozoa$Top)
-SDBottom<-(Protozoa$Top)
+VarTop<-var(Protozoa$Top)
+VarTop
+VarBottom<-var(Protozoa$Bottom)
+VarBottom
 ##--
-Variance<-var(Protozoa$Density, na.rm = TRUE)
-Var
-
-VarianceBottom<-var(Protozoa$Density)
+SDTop<-sqrt(VarTop)
+SDTop
+SDBottom<-sqrt(VarBottom)
+SDBottom
 ##--
-CITop<-MeanTop-qt(0.95,19)*SDTop
-CIBottom<-MeanBottom+qt(0.95,19)*SDBottom
-##-- Question 2
-
-##Making my dataset to work with
-
-
-ggplot(Protozoa, aes(MeanTop, MeanTop)) + 
-  geom_bar(stat = "identity", width=0.8, alpha=0.8) + 
-  geom_col(position=dodge) +
-  geom_errorbar(aes(ymin=MeanTop-SDTop, ymax=MeanTop+SDTop), width=0.2)
-
-##--???
+CITop<-MeanTop-qt(0.95,9)*SDTop
+CIBottom<-MeanBottom+qt(0.95,9)*SDBottom
+##-- Question 2 -- Plot
+SETop<-SDTop / sqrt(length(Protozoa$Top))
+SETop
+SEBottom<-SDBottom / sqrt(length(Protozoa$Bottom))
+SEBottom
+##--
+ProtoSummary<-data.frame(
+  group = c("Top", "Bottom"),
+  mean = c(MeanTop, MeanBottom),
+  SE = c(SETop, SEBottom)
+)
+##--
+ggplot(ProtoSummary, aes(group, Mean, fill = group)) +
+  geom_bar(stat = "identity", position = "dodge", width = 0.7) +
+  geom_errorbar(aes(ymin = Mean - SE, ymax = Mean + SE), width = 0.2) +
+  labs(
+    title = "Increased Protozoa Density at the Bottom of Microcosm Indicates a Higher Food Availability",
+    x = "Protozoa Location",
+    y = "Protozoa Density (per uL)"
+  ) +
+  theme_minimal() +
+  scale_fill_manual(values = c("maroon", "orange")) +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    legend.position = "none"
+  )
 ##-- Question 3
 rm(list=ls())
 Gonad<- read.csv("Data/kelp bass gonad mass.csv")
 View(Gonad)
 ##--
-MeanGonad<-mean(Gonad$gonad_mass)
-MedianGonad<-median(Gonad$gonad_mass)
-VarianceGonad<-var(Gonad$gonad_mass)
-SDGonad<-sd(Gonad$gonad_mass)
+Mass<-Gonad$gonad_mass
+##
+MeanGonad<-mean(Mass)
+MedianGonad<-median(Mass)
+VarianceGonad<-var(Mass)
+SDGonad<-sd(Mass)
 CVGonad<-(SDGonad/MeanGonad)
 ##--
-## install.packages("PerformanceAnalytics")
-## library(PerformanceAnalytics)
-##--
-SkewGonad<-skewness(Gonad$gonad_mass)
-KurtosisGonad<-kurtosis(Gonad$gonad_mass)
+SkewGonad<-skewness(Mass)
+KurtosisGonad<-kurtosis(Mass)
+##--3d
+hist(Mass)
+##--3e
+scale
