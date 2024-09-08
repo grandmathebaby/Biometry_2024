@@ -7,6 +7,7 @@ View(Protozoa)
 library(tidyverse)
 library(car)
 library(psych)
+library(moments)
 #Getting the stats
 MeanTop<-mean(Protozoa$Top)
 MeanTop
@@ -57,7 +58,7 @@ Gonad<- read.csv("Data/kelp bass gonad mass.csv")
 View(Gonad)
 ##--
 Mass<-Gonad$gonad_mass
-##
+##--
 MeanGonad<-mean(Mass)
 MedianGonad<-median(Mass)
 VarianceGonad<-var(Mass)
@@ -69,4 +70,8 @@ KurtosisGonad<-kurtosis(Mass)
 ##--3d
 hist(Mass)
 ##--3e
-scale
+ZMass<--scale(Gonad$gonad_mass, center=TRUE, scale=TRUE)
+hist(ZMass)
+##--3f
+qqnorm(Gonad$gonad_mass)
+qqline(Gonad$gonad_mass)
