@@ -38,9 +38,9 @@ ProtoSummary<-data.frame(
   SE = c(SETop, SEBottom)
 )
 ##--
-ggplot(ProtoSummary, aes(group, Mean, fill = group)) +
+ggplot(ProtoSummary, aes(group, mean, fill = group)) +
   geom_bar(stat = "identity", position = "dodge", width = 0.7) +
-  geom_errorbar(aes(ymin = Mean - SE, ymax = Mean + SE), width = 0.2) +
+  geom_errorbar(aes(ymin = mean - SE, ymax = mean + SE), width = 0.2) +
   labs(
     title = "Increased Protozoa Density at the Bottom of Microcosm Indicates a Higher Food Availability",
     x = "Protozoa Location",
@@ -70,8 +70,19 @@ KurtosisGonad<-kurtosis(Mass)
 ##--3d
 hist(Mass)
 ##--3e
-ZMass<--scale(Gonad$gonad_mass, center=TRUE, scale=TRUE)
+ZMass<-scale(Gonad$gonad_mass, center=TRUE, scale=TRUE)
 hist(ZMass)
 ##--3f
 qqnorm(Gonad$gonad_mass)
 qqline(Gonad$gonad_mass)
+##--Question 6
+rm(list=ls())
+Coral<- read.csv("Data/Agaricia.csv")
+View(Coral)
+##--Observing Skewness and converting to Z Scores before graphing
+SkewCoral<-skewness(Coral$weight)
+ZCoral<-scale(Coral$weight, center=TRUE, scale=TRUE)
+hist(ZCoral)
+##--Normality
+qqnorm(Coral$w)
+qqline(Coral$weight)
