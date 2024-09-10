@@ -79,10 +79,36 @@ qqline(Gonad$gonad_mass)
 rm(list=ls())
 Coral<- read.csv("Data/Agaricia.csv")
 View(Coral)
-##--Observing Skewness and converting to Z Scores before graphing
+##--Observing Skewness and hist of original data
 SkewCoral<-skewness(Coral$weight)
+hist(Coral$weight)
+#--Converting to Z Scores and hist of zscore data
 ZCoral<-scale(Coral$weight, center=TRUE, scale=TRUE)
 hist(ZCoral)
-##--Normality
-qqnorm(Coral$w)
+##--Normality of original
+qqnorm(Coral$weight)
 qqline(Coral$weight)
+##--Normality of logged
+qqnorm(log10(Coral$weight))
+qqline(log10(Coral$weight))
+##--6b
+CoralBoots<-replicate(1000, { 
+  samples<-sample(Coral$weight,replace=TRUE);
+  mean(samples)  })
+mean(CoralBoots)
+
+SortedCoral<-sort(CoralBoots)
+
+lowCI<-SortedCoral[25]
+highCI<-SortedCoral[975]
+lowCI
+highCI
+##--
+upperCI<-highCI - mean(CoralBoots)
+lowerCI<-mean(CoralBoots) - lowCI
+upperCI
+lowerCI
+##--
+hist(SortedCoral)
+abline(v=lowCI, col="blue")
+abline(v=highCI, col="blue")
