@@ -9,7 +9,15 @@ library(car)
 library(psych)
 library(moments)
 ##--1
-flatmean <- mean(urchins$Flat)
+UFlat <- urchins  %>%
+  filter(Location == "Flat")
+UFlat 
+UComplex <- urchins %>%
+  filter(Location == "Complex")
+
+flatmean <- mean(urchins$Location)  %>%
+  filter(Location == "Flat")
+
 complexmean <- mean(urchins$Complex)
 ##--
 Varflat<-var(urchins$Flat)
@@ -17,3 +25,6 @@ Varcomplex<-var(urchins$Complex)
 ##--
 SDflat<-sqrt(Varflat)
 SDcomplex<-sqrt(Varcomplex)
+##--2
+mytest1 <- t.test(urchins~Location, var.equal=TRUE, data=urchins, na.rm=TRUE)
+mytest1

@@ -10,7 +10,7 @@ library("tidyverse")
 
 # Import the data. Going to use SnailData again as an example
 mydata <- read.csv("Data/SnailData.csv")
-glimpse(mydata)
+View(mydata)
 
 # Visualize the data to refresh your memory of the major factors
 ggplot(mydata, aes(x=Weight)) + 
