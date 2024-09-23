@@ -46,3 +46,16 @@ ggplot(urchins, aes(y=Density, x=Location, fill=Location)) +
 rm(list=ls())
 Wheat <- read_csv("Homeworks/PS2/CoastBuckwheat.csv")
 View(Wheat)
+##--Normality
+#--Data is not normal, there is a point outside of the margin, try shapiro.
+qqp(Wheat$Density, "norm")
+hist(Wheat$Density)
+#--Test outlier
+model1<-lm(Wheat$Density~Wheat$quadrat, data=Wheat)
+library(car)
+outlierTest(model1)
+##--Normalizing
+
+##--One tailed t-test because we only have one eg of constant
+
+
