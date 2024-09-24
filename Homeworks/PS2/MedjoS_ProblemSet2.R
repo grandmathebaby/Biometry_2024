@@ -51,4 +51,24 @@ shapiro.test(Wheat$Density)
 ##--One tailed t-test because we only have one eg of constant
 Wheatest <- t.test(Wheat$Density, mu=4, na.rm=TRUE)
 Wheatest
-#badgirl
+#--Graph
+SortedWheat<-sort(Wheat$Density)
+SortedWheat
+##-- Because sample is 30 I used the CI derived from t test results
+lowCI <- 4.366935
+highCI <- 6.766398
+lowCI
+highCI
+##--FIXING THIS
+ggplot(Wheat, aes(x=Wheat$Density)) +
+  geom_histogram() +
+  labs(x="Quadrat", y="Wheat Density", title="Coastal Buckwheat Density Mean Exceeds Standard After Restoration") +
+  theme(legend.position="bottom") +
+  geom_vline(xintercept = lowCI, col="blue") +
+  geom_vline(xintercept = highCI, col="blue") +
+  geom_hline(yintercept = 4)
+
+##-- With Bootstrapping
+WheatBoots<-replicate(1000, {
+  samples<-sample(mydata$Length,replace=TRUE);
+  mean(samples)  })
