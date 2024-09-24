@@ -51,3 +51,4 @@ shapiro.test(Wheat$Density)
 ##--One tailed t-test because we only have one eg of constant
 Wheatest <- t.test(Wheat$Density, mu=4, na.rm=TRUE)
 Wheatest
+#badgirl
