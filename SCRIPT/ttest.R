@@ -67,7 +67,7 @@ mytest3
 flowers <- read.csv("Data/floral_visitors.csv")
 # This records the mean number of visitor species observed for plant species in larger
 # communities (identified by "matrix") with zygomorphic and actinomorphic flowers 
-glimpse(flowers) 
+View(flowers) 
 
 # The variable mnPoll is the mean number of pollinator (floral visitor) species 
 # for flowers with a particular symmetry in a particular community (matrix)

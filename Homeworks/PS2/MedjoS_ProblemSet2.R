@@ -38,7 +38,7 @@ ggplot(urchins, aes(y=Density, x=Location, fill=Location)) +
     y = "Urchin Density"
   ) +
   theme_minimal() +
-  scale_fill_manual(values = c("maroon", "dodgerblue")) +
+  scale_fill_manual(values = moma.colors("Fritsch", 2)) +
   theme(
     plot.title = element_text(hjust = 0.5),
   )
@@ -51,6 +51,8 @@ shapiro.test(Wheat$Density)
 ##--One tailed t-test because we only have one eg of constant
 Wheatest <- t.test(Wheat$Density, mu=4, na.rm=TRUE)
 Wheatest
+qqnorm(Wheat$Density)
+qqline(Wheat$Density)
 #--Graph
 SortedWheat <- sort(Wheat$Density)
 SortedWheat
@@ -92,8 +94,44 @@ ggplot(data.frame(x=SortedWB), aes(x=x)) +
   geom_vline(aes(xintercept = HighBoot, color="Upper CI")) +
   geom_hline(aes(yintercept = 4, color="Standard Mean (4 plants/25m^2)")) +
   guides(color = guide_legend(title = "Legend"))
-
-##--Jacknife because sample is small
-library(resample)
-jwheat<- jackknife(Wheat$Density, mean) #first argument is the data to be jackknifed. Second argument is the statistic you want to calculate
-jwheat
+##--3
+rm(list=ls())
+RT <- read_csv("Homeworks/PS2/RunTimes.csv")
+RT
+#
+shapiro.test(RT$Water)
+var.test(RT$Sportsdrink,RT$Water)
+#
+RTtest <- t.test(RT$Water, RT$Sportsdrink, paired=TRUE, data=RT)
+RTtest
+##--4
+rm(list=ls())
+crybbs <- read_csv("Homeworks/PS2/crying_babies.csv")
+view(crybbs)
+##
+ggplot(crybbs,aes(crybbs$cryduration,crybbs$IQ)) +
+  geom_point(size=2) +
+  labs(
+    title = "IQ's of Crying Babies in Relation to Their Crying Times",
+    x = "Crying time (mins)",
+    y = "IQ",
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.6),
+  )
+##--Normally distributed
+shapiro.test(crybbs$cryduration)
+shapiro.test(crybbs$IQ)
+##
+Ranks <- crybbs %>% mutate(cryrank = min_rank(cryduration), iqrank = min_rank(IQ))
+glimpse(Ranks)
+##--Pearsons r
+Pearsonsbbys <- cor.test(crybbs$cryduration,crybbs$IQ, method = "pearson")
+Pearsonsbbys
+#--Spearman's rho
+Spearmansbbys <- cor.test(Ranks$cryrank, Ranks$iqrank, method = "spearman")
+Spearmansbbys
+##--Kendall's tau
+Kendallsbbys <- cor.test(Ranks$cryrank, Ranks$iqrank, method = "kendall")
+Kendallsbbys
