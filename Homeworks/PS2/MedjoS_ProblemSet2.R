@@ -135,3 +135,10 @@ Spearmansbbys
 ##--Kendall's tau
 Kendallsbbys <- cor.test(Ranks$cryrank, Ranks$iqrank, method = "kendall")
 Kendallsbbys
+##--5
+rm(list=ls())
+bushdid911 <- read_csv("Homeworks/PS2/butterflyballot.csv")
+view(bushdid911)
+##-
+hedid <- bushdid911[-67,]
+glimpse(hedid)
