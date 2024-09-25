@@ -8,6 +8,7 @@ library(tidyverse)
 library(car)
 library(psych)
 library(moments)
+library(MoMAColors)
 ##--1a
 UFlat <- urchins  %>%
   filter(Location == "Flat")
@@ -137,8 +138,32 @@ Kendallsbbys <- cor.test(Ranks$cryrank, Ranks$iqrank, method = "kendall")
 Kendallsbbys
 ##--5
 rm(list=ls())
-bushdid911 <- read_csv("Homeworks/PS2/butterflyballot.csv")
-view(bushdid911)
+Floridaman <- read_csv("Homeworks/PS2/butterflyballot.csv")
+view(Floridaman)
 ##-
-hedid <- bushdid911[-67,]
-glimpse(hedid)
+NoPalm<- Floridaman[-67,]
+glimpse(NoPalm)
+shapiro.test(NoPalm$Bush)
+shapiro.test(NoPalm$Buchanan)
+##--
+FloRanks <- NoPalm %>% mutate(Bushrank = min_rank(Bush), Buchrank = min_rank(Buchanan))
+glimpse(FloRanks)
+##--Pearsons r
+Pearsons <- cor.test(FloRanks$Bush,FloRanks$Buchanan, method = "pearson")
+Pearsons
+#--Spearman's rho
+Spearmans <- cor.test(FloRanks$Bushrank,FloRanks$Buchrank, method = "spearman")
+Spearmans
+##--Kendall's tau
+Kendalls <- cor.test(FloRanks$Bushrank,FloRanks$Buchrank, method = "kendall")
+Kendalls
+##-- With Palm
+##--Pearsons r
+Pearsons2 <- cor.test(Floridaman$Bush,Floridaman$Buchanan, method = "pearson")
+Pearsons2
+#--Spearman's rho
+Spearmans2 <- cor.test(Floridaman$Bush,Floridaman$Buchanan, method = "spearman")
+Spearmans2
+##--Kendall's tau
+Kendalls2 <- cor.test(Floridaman$Bush,Floridaman$Buchanan, method = "kendall")
+Kendalls2
