@@ -52,23 +52,48 @@ shapiro.test(Wheat$Density)
 Wheatest <- t.test(Wheat$Density, mu=4, na.rm=TRUE)
 Wheatest
 #--Graph
-SortedWheat<-sort(Wheat$Density)
+SortedWheat <- sort(Wheat$Density)
 SortedWheat
-##-- Because sample is 30 I used the CI derived from t test results
-lowCI <- 4.366935
+##-- I tried without transforming data
+lowCI <- 4.366935 #From Shapiro test
 highCI <- 6.766398
 lowCI
 highCI
-##--FIXING THIS
-ggplot(Wheat, aes(x=Wheat$Density)) +
-  geom_histogram() +
-  labs(x="Quadrat", y="Wheat Density", title="Coastal Buckwheat Density Mean Exceeds Standard After Restoration") +
-  theme(legend.position="bottom") +
-  geom_vline(xintercept = lowCI, col="blue") +
-  geom_vline(xintercept = highCI, col="blue") +
-  geom_hline(yintercept = 4)
+##-- If I wanted to do it "by hand"
+#lowCI is mean(Wheat$Density)-(qt(0.975,29)*(sd(Wheat$Density)/sqrt(30)))
+#highCI is mean(Wheat$Density)+(qt(0.975,29)*(sd(Wheat$Density)/sqrt(30)))
 
-##-- With Bootstrapping
-WheatBoots<-replicate(1000, {
-  samples<-sample(mydata$Length,replace=TRUE);
+##--Plotting
+ggplot(data.frame(x=Wheat$Density), aes(x=x)) +
+  geom_histogram(fill="lightblue", color="black", bins=10) +
+  labs(x="Samples", y="Wheat Density", title="Coastal Buckwheat Density Mean Exceeds Standard After Restoration") +
+  theme(legend.position="right") +
+  geom_vline(aes(xintercept = lowCI, color="Lower CI 4.37")) +
+  geom_vline(aes(xintercept = highCI, color="Upper CI 5.77")) +
+  geom_hline(aes(yintercept = 4, color="Standard Mean (4 plants/25m^2)")) +
+  guides(color = guide_legend(title = "Legend"))
+
+##-- Bootstrapping
+WheatBoots <- replicate(1000, {
+  samples <- sample(Wheat$Density,replace=TRUE);
   mean(samples)  })
+WheatBoots
+SortedWB <- sort(WheatBoots)
+LowBoot <- SortedWB[25]
+HighBoot <- SortedWB[975]
+LowBoot
+HighBoot
+##--Plot
+ggplot(data.frame(x=SortedWB), aes(x=x)) +
+  geom_histogram(fill="lightblue", color="black") +
+  labs(x="Bootstrapped samples", y="Wheat Density", title="Coastal Buckwheat Density Mean Exceeds Standard After Restoration") +
+  theme(legend.position="bottom") +
+  geom_vline(aes(xintercept = LowBoot, color="Lower CI")) +
+  geom_vline(aes(xintercept = HighBoot, color="Upper CI")) +
+  geom_hline(aes(yintercept = 4, color="Standard Mean (4 plants/25m^2)")) +
+  guides(color = guide_legend(title = "Legend"))
+
+##--Jacknife because sample is small
+library(resample)
+jwheat<- jackknife(Wheat$Density, mean) #first argument is the data to be jackknifed. Second argument is the statistic you want to calculate
+jwheat
