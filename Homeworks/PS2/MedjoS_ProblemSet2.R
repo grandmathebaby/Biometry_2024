@@ -59,7 +59,7 @@ qqline(Wheat$Density)
 SortedWheat <- sort(Wheat$Density)
 SortedWheat
 ##-- I tried without transforming data
-lowCI <- 4.366935 #From Shapiro test
+lowCI <- 4.366935 
 highCI <- 6.766398
 lowCI
 highCI
@@ -174,10 +174,72 @@ Streams <- read_csv("Homeworks/PS2/Streams.csv")
 view(Streams)
 ##
 ##--Plot
-ggplot(Streams, aes(x=NumberSpp, y=Biomass)) +
+ggplot(Streams, aes(x=NumberSpp, y=Biomass, color="Biomass")) +
   geom_point(size=2) +
-  geom_smooth(method="lm", se=)
-  scale_fill_manual(values=c(moma.colors("Connors", 3)), name="Biomass") + 
-  labs(x="Streams", y="Biomass", title="the biomass is changing") +
-  theme(legend.position="bottom") +
+  geom_smooth(method="lm", se=FALSE, color="black", size = 0.5) +
+  scale_color_manual(values=moma.colors("Picasso", 5), name="Biomass") + 
+  labs(x="Number of species per stream", y="Biomass (mg/m^2)", title="Invertebrate Biomass Measurements by Stream") +
+  theme(legend.position="none") +
   guides(color = guide_legend(title = "Legend"))
+##
+shapiro.test(Streams$Biomass)
+shapiro.test(Streams$NumberSpp)
+boxplot(Streams, main = "Boxplot to Identify Outliers")
+##Bonferonni
+model1<-lm(Biomass~NumberSpp, data=Streams)
+model1
+outlierTest(model1)
+##--8
+rm(list=ls())
+algae <- read_csv("Homeworks/PS2/algae.csv")
+view(algae)
+##
+algaemodel <- lm(algae$Surface_area ~ algae$Height)
+summary(algaemodel)
+resid(algaemodel)
+algaeres <- resid(algaemodel)
+cialgae <- confint(algaemodel, level=0.95)
+##
+LowCI <- cialgae["Height", "2.5 %"]
+UpperCI <- cialgae["Height", "97.5 %"]
+ggplot(algae, aes(x=algae$Height, y=algae$Surface_area)) + 
+  geom_point(color="lightseagreen") +
+  geom_smooth(method="lm", level=0.95) +
+  geom_abline(intercept=coefficients(algaemodel)[1], slope=coefficients(algaemodel)[2]) +
+  labs(x="Algae Height (cm)", y="Surface area", title="Algal surface Area in Relation to Algal Height") +
+  theme(legend.position="none")
+##
+algaemodel
+
+
+algaeate12 <- algae[-12,]
+algaemodel2 <- lm(algaeate12$Surface_area ~ algaeate12$Height)
+outlierTest(algaemodel)
+summary(algaemodel2)
+resid(algaemodel2)
+algaeres2 <- resid(algaemodel2)
+cialgae2 <- confint(algaemodel2, level=0.95)
+ggplot(algaeate12, aes(x=algaeate12$Height, y=algaeate12$Surface_area)) + 
+  geom_point(color="lightseagreen") +
+  geom_smooth(method="lm", level=0.95) +
+  geom_abline(intercept=coefficients(algaemodel2)[1], slope=coefficients(algaemodel2)[2]) +
+  labs(x="Algae Height (cm)", y="Surface area", title="Algal surface Area in Relation to Algal Height") +
+  theme(legend.position="none")
+
+
+confint(algaemodel, level = 0.95)
+lowCI <- -105.29279 #From Shapiro test
+highCI <- 693.2733
+lowCI
+highCI
+##
+ggplot(algae, aes(x=Height, y=Surface_area, color="Surface_area")) +
+  geom_point(size=2) +
+  geom_smooth(method="lm", se=FALSE, color="black", size = 0.5) +
+  scale_color_manual(values=moma.colors("Picasso", 5), name="Surface_area") + 
+  labs(x="Algae Height (cm)", y="Surface area", title="Algal surface Area Influenced by Algal Height") +
+  theme(legend.position="none") +
+  geom_vline(aes(xintercept = lowCI, color="Lower CI")) +
+  geom_vline(aes(xintercept = highCI, color="Upper CI")) +
+  guides(color = guide_legend(title = "Legend"))
+
