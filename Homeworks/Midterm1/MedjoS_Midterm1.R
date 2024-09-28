@@ -32,7 +32,23 @@ peeps <- warmbodies$Person
 meanwarmth <- mean(warmth)
 medianwarmth <- median(warmth)
 sdwarmth <- sd(warmth)
-sewarmth <- sdtemp/sqrt(length(warmth))
-cvwarmth <- (sdtemp/meanwarmth)*100
-
-
+sewarmth <- sdwarmth/sqrt(length(warmth))
+cvwarmth <- (sdwarmth/meanwarmth)
+#--b
+warmboots <- replicate(1000, {
+  warmingup <- sample(warmth, replace=TRUE);
+  mean(warmingup) })
+#
+mean(warmboots)
+sortedboots <- sort(warmboots)
+lowci <- sortedboots[25]
+highci <- sortedboots[975]
+#
+lowerci <- mean(warmboots)-lowci
+upperci <- highci-mean(warmboots)
+lowerci
+upperci
+#
+hist(sortedboots)
+abline(v=lowci, col="blue")
+abline(v=highci, col="blue")
