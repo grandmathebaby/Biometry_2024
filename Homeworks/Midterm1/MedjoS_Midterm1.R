@@ -52,3 +52,19 @@ upperci
 hist(sortedboots)
 abline(v=lowci, col="blue")
 abline(v=highci, col="blue")
+#--c
+#--One sample t-test
+warmthtest <- t.test(warmth, mu=98.6)
+warmthtest
+#--3
+rm(list=ls())
+kelp <- read_csv("Homeworks/Midterm1/sargassum.csv")
+View(kelp)
+#--a
+#Two sample t-test, using welch's because variances may be different in these pops.
+Shade <- kelp %>%
+  filter(treatment == "underkelp")
+NoShade <- kelp %>%
+  filter(treatment =="open")
+kelptest <- t.test(Control$CellGrowth, Treated$CellGrowth, paired=TRUE)
+tcancer
