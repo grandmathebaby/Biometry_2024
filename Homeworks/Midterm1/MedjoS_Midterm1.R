@@ -83,5 +83,62 @@ ggplot(kelpgraph, aes(x=treatment, y=kelpmeans, fill=factor(treatment), group=fa
   theme_minimal() +
   labs(x="Treatment", y="Biomass Mean (g/m^2)", fill="Treatment", title="Invasive Alga S. horneri Mean Biomass Decreases when Shaded by\n Native Alga M. pyrifera") +
   scale_fill_manual(values=moma.colors("Warhol"), labels=c("open", "underkelp"))
-    
-                    
+#--4
+rm(list=ls())
+rumpus <- read_csv("Homeworks/Midterm1/bumpus.csv")
+View(rumpus)
+#--a
+qqp(rumpus$Weight, "norm")
+qqp(rumpus$Length, "norm")
+#--b
+#Two-sample t-test with equal variances
+bartlett.test(Length~Sex, data=rumpus)
+#
+Frumpus <- rumpus %>%
+  filter(Sex=="f") %>%
+  select(Length)
+Mumpus <- rumpus %>%
+  filter(Sex=="m") %>%
+  select(Length)
+#On Raw Data, they differ
+rumpustest <- t.test(Frumpus,Mumpus, var.equal = TRUE)
+rumpustest
+#On Logged Data, they differ
+rumpustest2 <- t.test(log(Frumpus$Length),log(Mumpus$Length), var.equal = TRUE)
+rumpustest2
+#Plot on logged data
+Loglength <- log(rumpus$Length)
+rumpusplot1 <- rumpus %>%
+  group_by(Sex) %>%
+  summarize(meanLength=mean(Loglength), SE=sd(Loglength)/sqrt(length(Loglength)))
+rumpusplot1
+#
+ggplot(rumpusplot1, aes(x=Sex, y=meanLength, fill=factor(Sex), group=factor(Sex))) +
+  geom_bar(stat="identity", position="dodge", size=0.6) +
+  geom_errorbar(aes(ymin= meanLength - SE, ymax= meanLength + SE), stat="identity", position="dodge", width = 0.2) +
+  theme_minimal() +
+  labs(x="Sex", y="Log10 Mean Length of Sparrows", fill="Sex", title="The title") +
+  scale_y_log10() +
+  scale_fill_manual(values=moma.colors("OKeeffe"), labels=c("m", "f"))
+#
+ggplot(rumpusplot1, aes(x=Sex, y=meanLength, fill=factor(Sex))) +
+  geom_boxplot() +
+  theme_minimal() +
+  labs(x="Sex", y="Log10 Mean Length of Sparrows", fill="Sex", title="The title") +
+  scale_y_log10() +
+  scale_fill_manual(values=moma.colors("OKeeffe"), labels=c("m", "f"))
+  
+#Trying a different plot
+rumpusplot2 <- rumpus %>%
+  group_by(Sex) %>%
+  summarize(meanlength2=mean(Length), SE2 = sd(Length)/sqrt(length(Length)))
+rumpusplot2
+
+ggplot(rumpusplot2, aes(x=Sex, y=meanlength2, fill=factor(Sex), group=factor(Sex))) +
+  geom_violin()
+
+ggplot(Bumpus, aes(y=Length, x=Sex, fill=Sex)) + 
+  geom_boxplot() + 
+scale_fill_manual(values=c("slateblue","darkolivegreen3"), name="Sex") + 
+  scale_y_log10() + theme_bw() + 
+  labs(y="Length (mm)", x="Sex", title="Length of Male and Female Sparrows") 
