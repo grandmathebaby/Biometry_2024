@@ -61,10 +61,27 @@ rm(list=ls())
 kelp <- read_csv("Homeworks/Midterm1/sargassum.csv")
 View(kelp)
 #--a
-#Two sample t-test, using welch's because variances may be different in these pops.
+#Two sample t-test, using welch's because variances/means may be different in these pops.
 Shade <- kelp %>%
   filter(treatment == "underkelp")
+Shade
 NoShade <- kelp %>%
   filter(treatment =="open")
-kelptest <- t.test(Control$CellGrowth, Treated$CellGrowth, paired=TRUE)
-tcancer
+NoShade
+#
+kelptest <- t.test(Shade$biomass, NoShade$biomass)
+kelptest
+#--b
+kelpgraph <- kelp %>%
+  group_by(treatment) %>%
+  summarize(kelpmeans = mean(biomass), SE = sd(biomass)/sqrt(length(biomass)))
+kelpgraph
+#
+ggplot(kelpgraph, aes(x=treatment, y=kelpmeans, fill=factor(treatment), group=factor(treatment))) +
+  geom_bar(stat="identity", position="dodge", alpha=1) +
+  geom_errorbar(aes(ymin=kelpmeans-SE, ymax=kelpmeans+SE), stat="identity", position="dodge", width = 0.2) +
+  theme_minimal() +
+  labs(x="Treatment", y="Biomass Mean (g/m^2)", fill="Treatment", title="Invasive Alga S. horneri Mean Biomass Decreases when Shaded by\n Native Alga M. pyrifera") +
+  scale_fill_manual(values=moma.colors("Warhol"), labels=c("open", "underkelp"))
+    
+                    
