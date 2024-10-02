@@ -120,25 +120,40 @@ ggplot(rumpusplot1, aes(x=Sex, y=meanLength, fill=factor(Sex), group=factor(Sex)
   labs(x="Sex", y="Log10 Mean Length of Sparrows", fill="Sex", title="The title") +
   scale_y_log10() +
   scale_fill_manual(values=moma.colors("OKeeffe"), labels=c("m", "f"))
-#
-ggplot(rumpusplot1, aes(x=Sex, y=meanLength, fill=factor(Sex))) +
+#Trying a different plot on the raw data
+ggplot(rumpus, aes(x=Sex, y=Length, fill=Sex)) +
   geom_boxplot() +
-  theme_minimal() +
-  labs(x="Sex", y="Log10 Mean Length of Sparrows", fill="Sex", title="The title") +
-  scale_y_log10() +
-  scale_fill_manual(values=moma.colors("OKeeffe"), labels=c("m", "f"))
-  
-#Trying a different plot
-rumpusplot2 <- rumpus %>%
-  group_by(Sex) %>%
-  summarize(meanlength2=mean(Length), SE2 = sd(Length)/sqrt(length(Length)))
-rumpusplot2
-
-ggplot(rumpusplot2, aes(x=Sex, y=meanlength2, fill=factor(Sex), group=factor(Sex))) +
-  geom_violin()
-
-ggplot(Bumpus, aes(y=Length, x=Sex, fill=Sex)) + 
-  geom_boxplot() + 
-scale_fill_manual(values=c("slateblue","darkolivegreen3"), name="Sex") + 
-  scale_y_log10() + theme_bw() + 
-  labs(y="Length (mm)", x="Sex", title="Length of Male and Female Sparrows") 
+  theme_minimal() + scale_y_log10() +
+  stat_compare_means(method = "t.test", label = "p.signif", comparisons = list(c("m", "f"))) +
+  labs(x="Sex", y="Length (mm)", fill="Sex", title="Comparison of Body Length Between Female and Male Sparrows") +
+  scale_fill_manual(values=moma.colors("Smith"), labels=c("Male", "Female"))
+#--c
+rm(list=ls())
+rumpus <- read_csv("Homeworks/Midterm1/bumpus.csv")
+#-Weight is non-normal, we can't use Pearsons
+#Spearman's rho
+Spearmansrump<-cor.test(rumpus$Weight, rumpus$Length, method="spearman", na.rm=TRUE)
+Spearmansrump
+#Confirming Spearmans because of tied rank warning <- Spearmans works :)
+birdranks <- rumpus %>%
+  mutate(weight_rank = min_rank(Weight), length_rank = min_rank(Length))
+glimpse(birdranks) 
+Pearsonsrump <- cor.test(birdranks$weight_rank, birdranks$length_rank, method="pearson", na.rm=TRUE)
+Pearsonsrump
+#Kendall's tau
+Kendallsrump<-cor.test(rumpus$Weight, rumpus$Length, method="kendall", na.rm=TRUE)
+Kendallsrump
+#--d
+library(lmodel2)
+rumpusmodelo2 <- lmodel2(Weight~Length, range.y="relative", range.x="relative", data=rumpus, nperm=99)
+rumpusmodelo2
+#Scatterlot
+ggplot(rumpus, aes(x=Length, y=Weight, color=Length))+
+  geom_point() +
+  geom_smooth(method = "lm", formula = y~x, color="white") +
+  labs(y = "Weight (mg)", x="Length (cm)", title="Sparrow Weight Increases with Body Length") +
+  theme_bw(base_size=12) +
+  theme(legend.position="right") +
+  scale_color_gradientn(colors=moma.colors("Flash"))
+#--Sacha Medjo-Akono
+#--Midterm 1 - Fall 2024
