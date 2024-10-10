@@ -16,6 +16,7 @@ food <- krat$seedproduction
 #Loaded Model 2 because Density is not fixed by Camdilla
 #Separate models
 rathome1 <- lmodel2(rats~home, range.y="relative", range.x="relative", data=krat, nperm=99)
+rathome1
 summary(rathome1)
 ggplot(krat, aes(x=rats, y=home))+
   geom_smooth(method = "lm", formula = y~x, color="white") +
@@ -24,9 +25,19 @@ ggplot(krat, aes(x=rats, y=home))+
   theme_bw(base_size=18)
 #
 ratfood1 <- lmodel2(rats~food, range.y="relative", range.x="relative", data=krat, nperm=99)
+ratfood1
 summary(ratfood1)
 ggplot(krat, aes(x=rats, y=food))+
   geom_smooth(method = "lm", formula = y~x, color="white") +
-  geom_point(color="darkorange") + # points
+  geom_point(color="blue") + # points
   labs(y = "Food", x="Rat Density") +
+  theme_bw(base_size=18)
+#
+ratdead1 <- lmodel2(rats~snek, range.y="relative", range.x="relative", data=krat, nperm=99)
+ratdead1
+summary(ratdead1)
+ggplot(krat, aes(x=rats, y=snek))+
+  geom_smooth(method = "lm", formula = y~x, color="white") +
+  geom_point(color="darkgreen") + # points
+  labs(y = "Predation", x="Rat Density") +
   theme_bw(base_size=18)
