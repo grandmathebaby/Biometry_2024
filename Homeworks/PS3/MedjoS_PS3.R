@@ -48,6 +48,26 @@ ggplot(krat, aes(x=rats, y=snek))+
   theme_bw(base_size=18)
 #--Multiple regression
 OGrats <- lm(rats ~ food + home + snek, data=krat)
+OGrats
+#Check for collinearity
 library(GGally)
 X <- krat[,c("shrubcover","seedproduction","snakedensity")] # just the columns named
 ggpairs(X)
+library(mctest)
+imcdiag(OGrats) #multicollinearity for food
+#
+ratsnohome <- lm(rats ~ snek + food)
+hungryrats <- lm(rats ~ snek + home)
+saferats <- lm(rats ~ home + food)
+rathome2 <- lm(rats ~ home)
+ratfood2 <- lm(rats ~ food)
+ratdead2 <- lm(rats ~ snek)
+#--Best 1 to Worst 7
+AIC(OGrats) # 2
+AIC(ratsnohome) # 5
+AIC(hungryrats) # Winner 1
+AIC(saferats) # 4
+AIC(rathome2) # 3
+AIC(ratfood2) # 6
+AIC(ratdead2) # 7
+#
