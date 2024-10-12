@@ -13,6 +13,11 @@ rats <- krat$krat_density
 home <- krat$shrubcover
 snek <- krat$snakedensity
 food <- krat$seedproduction
+#
+qqnorm(rats)
+qqnorm(home)
+qqnorm(snek)
+qqnorm(food)
 #Loaded Model 2 because Density is not fixed by Camdilla
 #Separate models
 rathome1 <- lmodel2(rats~home, range.y="relative", range.x="relative", data=krat, nperm=99)
@@ -41,3 +46,8 @@ ggplot(krat, aes(x=rats, y=snek))+
   geom_point(color="darkgreen") + # points
   labs(y = "Predation", x="Rat Density") +
   theme_bw(base_size=18)
+#--Multiple regression
+OGrats <- lm(rats ~ food + home + snek, data=krat)
+library(GGally)
+X <- krat[,c("shrubcover","seedproduction","snakedensity")] # just the columns named
+ggpairs(X)
