@@ -5,7 +5,7 @@ library(car)
 library(psych)
 library(moments)
 library(lmodel2)
-#-1
+#--Question 1
 rm(list=ls())
 krat <- read_csv("Homeworks/PS3/krat.csv")
 View(krat)
@@ -71,3 +71,87 @@ AIC(rathome2) # 3
 AIC(ratfood2) # 6
 AIC(ratdead2) # 7
 #
+install.packages("AICcmodavg")
+library(AICcmodavg)
+models <- list(OGrats, ratsnohome, hungryrats, saferats, rathome2, ratfood2, ratdead2)
+model.names <- c("OGrats", "ratsnohome", "hungryrats", "saferats", "rathome2", "ratfood2", "ratdead2")
+aictab(cand.set=models, modnames=model.names)
+#
+anova(OGrats)
+anova(hungryrats)
+#
+library(rockchalk)
+plotPlane(OGrats, plotx1="home", plotx2="food")
+#--Question 3
+rm(list=ls())
+rooted <- read_csv("Homeworks/PS3/rootshoot.csv")
+View(rooted)
+#
+nitro <- rooted$Nitrogen
+ratio <- rooted$RootShoot
+model1 <- lm(ratio~nitro)
+model1
+plot(model1) #cone shaped not normal
+var.test(ratio, nitro)
+#logged data conforms to assumptions
+Uprooted <- lm(log(ratio)~nitro)
+Uprooted
+plot(Uprooted)
+#ANOVA on logged data
+anova(Uprooted)
+#Tukey
+library("emmeans")
+emmeans(Uprooted, pairwise~"nitro", adjust="Tukey")
+TukeyHSD(aov(Uprooted))
+library(agricolae)
+HSD.test(Uprooted, "nitro", console=TRUE) 
+#Plot
+rootplot <- as.data.frame(emmeans(Uprooted,"nitro") )
+rootplot
+rootplot$tukey <- HSD.test(Uprooted, "nitro", console=TRUE)$groups$groups
+#
+ggplot(data=rootplot, aes(x=nitro, y=emmean, fill=nitro)) +
+  geom_bar(width=0.5, stat="identity") + 
+  geom_errorbar(aes(ymax=emmean+SE, ymin=emmean-SE), color="black", stat="identity", position=position_dodge(width=0.9), width=0.1) + 
+  geom_text(aes(label=tukey), vjust=-2.5) + # You may need to tweak `vjust` and y limits to make this work
+  scale_fill_manual(values=c('#7fc97f','#beaed4','#fdc086','skyblue')) +
+  guides(fill="none") + 
+  ylab("Nitrogen Level (N2)") +
+  xlab("Root-Shoot Ratio") +
+  theme_bw(base_size=14)
+#--Question 4
+rm(list=ls())
+munch <- read_csv("Homeworks/PS3/seedsrodents.csv")
+View(munch)
+#
+munched <- munch$seed.mass
+munching <- as.factor(munch$Treatment)
+munching
+levels(munching)
+#-1 Control 
+#-2 Exclusion
+#-3 Fence control
+munch.model <- aov(seed.mass~Treatment, data=munch)
+summary(munch.model)
+#Creating vectors
+#Compare the control vs. fence and exlusion
+c1 <- c(1,0,-1)
+#Compare control and fence together vs. exclusion
+c2 <- c(1,-2,1)
+#
+mothermunch <- cbind(c1,c2)
+mothermunch
+munch.model
+contrasts(munching) <- mothermunch
+summary(munch.model, split=
+          list(Treatment=list("Exclusion Effect"=1, "Rodent Effect"=2))
+)
+#ANOVA
+model.munch <- lm(munched~munching)
+plot(model.munch)
+anova(model.munch)
+#Tukey
+library("emmeans")
+emmeans(model.munch, pairwise~"munching", adjust="Tukey")
+TukeyHSD(aov(model.munch))
+#--Question 5
