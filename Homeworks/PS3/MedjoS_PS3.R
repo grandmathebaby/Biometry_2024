@@ -91,8 +91,7 @@ nitro <- rooted$Nitrogen
 ratio <- rooted$RootShoot
 model1 <- lm(ratio~nitro)
 model1
-plot(model1) #cone shaped not normal
-var.test(ratio, nitro)
+#plot(model1)
 #logged data conforms to assumptions
 Uprooted <- lm(log(ratio)~nitro)
 Uprooted
@@ -114,11 +113,13 @@ ggplot(data=rootplot, aes(x=nitro, y=emmean, fill=nitro)) +
   geom_bar(width=0.5, stat="identity") + 
   geom_errorbar(aes(ymax=emmean+SE, ymin=emmean-SE), color="black", stat="identity", position=position_dodge(width=0.9), width=0.1) + 
   geom_text(aes(label=tukey), vjust=-2.5) + # You may need to tweak `vjust` and y limits to make this work
-  scale_fill_manual(values=c('#7fc97f','#beaed4','#fdc086','skyblue')) +
-  guides(fill="none") + 
-  ylab("Nitrogen Level (N2)") +
-  xlab("Root-Shoot Ratio") +
-  theme_bw(base_size=14)
+  labs(y = "Root:Shoot Ratio", 
+       x="Nitrogen Level (N2)", 
+       title="Soil Nitrogen Levels Affect Root-to-shoot Ratio",
+       fill= "N2 Level") +
+  scale_fill_manual(values=moma.colors("Smith"), labels=c("1.5N", "2N", "Ambient","Low")) +
+  theme(legend.position="right") +
+  theme_minimal()
 #--Question 4
 rm(list=ls())
 munch <- read_csv("Homeworks/PS3/seedsrodents.csv")
@@ -155,3 +156,36 @@ library("emmeans")
 emmeans(model.munch, pairwise~"munching", adjust="Tukey")
 TukeyHSD(aov(model.munch))
 #--Question 5
+rm(list=ls())
+coral <- read_csv("Homeworks/PS3/montastraea.csv")
+View(coral)
+#Random Ramet
+library("lme4")
+model.coral1 <- lmer(Calyxarea ~ Genotype + (1|Ramet), data=coral)
+#plot(model.coral1)
+anova(model.coral1)
+#Without random effect
+model.coral2 <- lm(Calyxarea~Genotype, data=coral)
+anova(model.coral1,model.coral2)
+#Random genotype and ramet
+model.coral3 <- lmer(Calyxarea~(1|Genotype) + (1|Ramet), data=coral)
+summary(model.coral3)
+#
+library("emmeans")
+coralplot1 <- as.data.frame(emmeans(model.coral1, ~Genotype))
+coralplot1
+summary(model.coral1)
+#
+library(MoMAColors)
+ggplot(data=coralplot1, aes(x=Genotype, y=emmean, fill=Genotype)) + 
+  geom_bar(width=0.5, stat="identity") + 
+  labs(y = "Cakyx Area", x="Genotype", title="M. franksi Calyx Area Variance 57%\n Dependent on Genotype") +
+  geom_errorbar(aes(ymax=emmean+SE, ymin=emmean-SE), color="black", stat="identity", position=position_dodge(width=0.9), width=0.1) + 
+  scale_fill_manual(values=moma.colors("Smith"), labels=c("G1", "G2", "G3")) +
+  theme(legend.position="right") +
+  theme_minimal()
+#--Question 6
+rm(list=ls())
+crisis <- read_csv("Homeworks/PS3/temp_CO2.csv")
+View(crisis)
+#
