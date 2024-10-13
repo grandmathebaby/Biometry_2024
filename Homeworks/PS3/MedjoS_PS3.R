@@ -189,3 +189,27 @@ rm(list=ls())
 crisis <- read_csv("Homeworks/PS3/temp_CO2.csv")
 View(crisis)
 #
+freemepls <- lm(growth~Temperature*CO2, data=crisis)
+anova(freemepls)
+#plot(freemepls)
+#
+freethecoral <- as.data.frame(emmeans(freemepls, ~ Temperature*CO2))
+freethecoral
+#freethecoral$tukey <- HSD.test(freemepls, "Temperature", console=FALSE)$groups$groups  
+#freethecoral
+#Distinguishing treatments
+freethecoral$treatment <- paste0(freethecoral$Temperature," temp")
+#
+ggplot(freethecoral, aes(x=treatment, y=emmean, fill=CO2)) + 
+  geom_bar(stat="identity", position=position_dodge(width=0.9), width=0.7) +
+  geom_errorbar(aes(ymin=emmean - SE, ymax=emmean + SE), 
+                position=position_dodge(width=0.9), width=0.2) +
+  labs(x="Treatment Combination", 
+       y="Coral Basal Area Growth (mm²)", 
+       fill="pCO2 Level",
+       title="Effects of Temperature and pCO2 on Coral Growth Rates") +
+  scale_fill_manual(values=moma.colors("Smith"), labels=c("Ambient CO2", "High CO2")) + 
+  theme_minimal() +
+  theme(legend.position="right")
+#--Sacha Medjo-Akono
+#--Problem Set 3 - Fall 2024
