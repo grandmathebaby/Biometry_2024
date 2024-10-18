@@ -120,6 +120,12 @@ View(weeds)
 #Making Factors
 weeds$species <- as.factor(weeds$species)
 #Normality
-qqp(weeds$BreakForce, "norm") #Normal Enough
-qqp(weeds$Thickness, "norm") #Badgirl will log both because these are 
+weedmod1 <- lm(BreakForce ~ Thickness*species, data=weeds)
+plot(weedmod1) #Cone-shaped, will log transform
 thicklog <- log(weeds$Thickness)
+brokenlog <- log(weeds$BreakForce)
+#Real model
+weedmod2 <- lm(brokenlog~thicklog*species, data=weeds)
+plot(weedmod2)
+
+
