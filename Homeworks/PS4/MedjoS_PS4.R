@@ -84,3 +84,37 @@ ggplot(graphdata, aes(x=weeded, y=emmean, fill=as.factor(weeded))) +
   scale_fill_manual(values=c("yes"="seagreen","no"="salmon"), name="weeded") +  
   theme_bw(base_size=14)
 #--Question 3
+rm(list=ls())
+coraline <- read_csv("Homeworks/PS4/coral_acclimation.csv")
+View(coraline)
+#Making factors
+coraline$temperature <- as.factor(coraline$temperature)
+coraline$coral <- as.factor(coraline$coral)
+coraline$day <- as.factor(coraline$day)
+#Looks normal
+qqp(coraline$FvFm, "norm")
+#Model w random coral + interaction between temp/day
+library(lme4)
+library(lmerTest)
+coralmod <- lmer(FvFm ~ temperature + day + temperature:day + (1|temperature/coral), data=coraline)
+anova(coralmod)
+#Plot
+library(emmeans)
+library(MoMAColors)
+display.all.moma()
+coralgraph <- as.data.frame(emmeans(coralmod, ~temperature:day))
+coralgraph
+#
+ggplot(coralgraph, aes(x=day, y=emmean, group=temperature, color=temperature)) +
+  geom_line() +
+  geom_point(size=2)+
+  geom_errorbar(aes(ymax=emmean+SE, ymin=emmean-SE), stat="identity", width=0.1) +
+  scale_color_manual(values=moma.colors("Warhol"), labels=c("ambient", "warm", "hot"),
+                     breaks=c("ambient", "warm", "hot")) +
+  labs(x="day", y="FvFm", color="temperature", title="Coral Acclimation is Dependent on Time and Temperature") + 
+  theme_minimal()
+#--Question 4
+rm(list=ls())
+weeds <- read_csv("Homeworks/PS4/stipe_strength.csv")
+View(weeds)
+#
