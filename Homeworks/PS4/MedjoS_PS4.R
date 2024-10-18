@@ -117,4 +117,9 @@ ggplot(coralgraph, aes(x=day, y=emmean, group=temperature, color=temperature)) +
 rm(list=ls())
 weeds <- read_csv("Homeworks/PS4/stipe_strength.csv")
 View(weeds)
-#
+#Making Factors
+weeds$species <- as.factor(weeds$species)
+#Normality
+qqp(weeds$BreakForce, "norm") #Normal Enough
+qqp(weeds$Thickness, "norm") #Badgirl will log both because these are 
+thicklog <- log(weeds$Thickness)
