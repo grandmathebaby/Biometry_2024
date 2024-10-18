@@ -31,27 +31,56 @@ View(plant)
 plant$Species <- as.factor(plant$Species)
 plant$clipped <- as.factor(plant$clipped)
 plant$weeded <- as.factor(plant$weeded)
-#Normality of flower count
+#Non-normal flower count
 qqnorm(plant$flowers)
 qqline(plant$flowers) 
 hist(plant$flowers)
-#Not normally distributed
-logflowers <- log(plant$flowers)
-logflowers
-hist(logflowers) #not happy in the model
-sqrtflowers <- sqrt(plant$flowers)
-sqrtflowers
-hist(sqrtflowers)
-qqnorm(sqrtflowers)
-qqline(sqrtflowers)
+#
+skewness(plant$flowers)
+kurtosis(plant$flowers)
+#Tried CLT but still not trusting it
+samp200 <- vector(mode="numeric", length=1000)
 
+for(r in 1:1000){
+  samp200[r] <- mean(sample(plant$flowers, 200)) 
+}
 
+ggplot(data.frame(flowers=samp200), aes(x=flowers)) + 
+  geom_histogram(fill="#fb9a99") + theme_bw()
+skewness(samp200)
+kurtosis(samp200)
+#Square-root transformation
+squareflower <- sqrt(plant$flowers)
+squareflower
 #Three-way ANOVA
 library(lme4)
 install.packages("lmerTest")
 library(lmerTest)
-#Model w Species Random
-plantmod <- lmer(sqrtflowers~clipped + weeded + (1|Species) + clipped*weeded +
+#Model w Species Random + Interactions
+plantmod <- lmer(squareflower~clipped + weeded + (1|Species) + clipped*weeded +
                    (1|Species:weeded) + (1|Species:clipped) + (1|Species:clipped:weeded), data=plant)
 summary(plantmod)
 anova(plantmod)
+#No Random + No interactions
+plantmod2 <- lm(squareflower~clipped + weeded + clipped*weeded, data=plant)
+anova(plantmod, plantmod2)
+#Species Random + No interactions
+plantmod3 <- lmer(squareflower~clipped + weeded + + clipped*weeded + (1|Species), data=plant)
+anova(plantmod, plantmod2, plantmod3)
+#Plot
+library(emmeans)
+graphdata <- as.data.frame(emmeans(plantmod, ~clipped + weeded + + clipped*weeded))
+graphdata
+#Labels
+clipped.labs <- c("Clipped Yes", "Clipped No")
+names(clipped.labs) <- c("yes", "no")
+#
+ggplot(graphdata, aes(x=weeded, y=emmean, fill=as.factor(weeded))) + 
+  geom_bar(stat="identity", position="dodge", linewidth=0.6) + 
+  geom_errorbar(aes(ymax=emmean+SE, ymin=emmean-SE),
+                stat="identity", position=position_dodge(width=0.9), width=0.1) + 
+  labs(x="weeded", y="flower production") + 
+  facet_wrap("clipped", labeller = labeller(clipped = clipped.labs)) +
+  scale_fill_manual(values=c("yes"="seagreen","no"="salmon"), name="weeded") +  
+  theme_bw(base_size=14)
+#--Question 3
