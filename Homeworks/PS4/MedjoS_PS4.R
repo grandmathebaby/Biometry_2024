@@ -109,9 +109,9 @@ ggplot(coralgraph, aes(x=day, y=emmean, group=temperature, color=temperature)) +
   geom_line() +
   geom_point(size=2)+
   geom_errorbar(aes(ymax=emmean+SE, ymin=emmean-SE), stat="identity", width=0.1) +
-  scale_color_manual(values=moma.colors("Warhol"), labels=c("ambient", "warm", "hot"),
+  scale_color_manual(values=moma.colors("Warhol"), labels=c("Ambient", "Warm", "Hot"),
                      breaks=c("ambient", "warm", "hot")) +
-  labs(x="day", y="FvFm", color="temperature", title="Coral Acclimation is Dependent on Time and Temperature") + 
+  labs(x="Day", y="FvFm", color="Temperature", title="Coral Acclimation is Dependent on Time and Temperature") + 
   theme_minimal()
 #--Question 4
 rm(list=ls())
@@ -120,12 +120,37 @@ View(weeds)
 #Making Factors
 weeds$species <- as.factor(weeds$species)
 #Normality
-weedmod1 <- lm(BreakForce ~ Thickness*species, data=weeds)
-plot(weedmod1) #Cone-shaped, will log transform
+weedmod1 <- lm(BreakForce ~ species * Thickness, data=weeds)
+#plot(weedmod1) #Cone-shaped, will log transform
 thicklog <- log(weeds$Thickness)
 brokenlog <- log(weeds$BreakForce)
-#Real model
-weedmod2 <- lm(brokenlog~thicklog*species, data=weeds)
-plot(weedmod2)
-
-
+#Log model with interaction of thickness and species
+weedmod2 <- lm(brokenlog~species * thicklog, data=weeds)
+#plot(weedmod2)
+anova(weedmod2)
+#Log model no interaction
+weedmod3 <- lm(brokenlog~thicklog, data=weeds)
+anova(weedmod3)
+plot(weedmod3)
+#
+AIC(weedmod2) #Chosen because we care about interaction 17.78381
+AIC(weedmod3) #Better 17.34563
+# We have 28 Ccrispus and 37 Mstellatus so model is unbalanced
+library(car)
+Anova(weedmod2, type="III")
+#Plot
+breakingbad <- predict(weedmod2) 
+#
+weedgraph <- cbind(weeds, breakingbad) 
+# We'll plot the original data as points, and the regression preditions
+# as lines --- and in this case you can see that the relationship between
+# length and weight is very very similar at the two tidal heights
+ggplot(data=weedgraph, aes(x=thicklog, y=brokenlog, color=species)) +
+  geom_point() + 
+  geom_line(aes(y=breakingbad)) +
+  labs(x="Log Thickness", y="Log Breakforce", color="Species",
+       title="Tissue Thickness Accounts for Likelihood of Seaweed\nDislodgment by Storm Waves") +
+  scale_color_manual(values=moma.colors("Liu"), labels=c("C. crispus", "M. Stellatus")) +
+  theme_minimal() 
+#--Sacha Medjo-Akono
+#--Problem Set 4 - Fall 2024
