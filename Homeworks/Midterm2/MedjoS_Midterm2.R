@@ -95,3 +95,86 @@ AIC(tinamod12)
 #
 anova(tinamod3)
 #--QUestion 3 
+rm(list=ls())
+octoocta <- read_csv("Homeworks/Midterm2/octocorals.csv")
+View(octoocta)
+#
+octoocta$Treatment <- as.factor(octoocta$Treatment)
+#Model with interaction
+octo <- lm(Photosynthesis ~ ColonyDiameter*Treatment, data = octoocta) #Best model
+plot(octo)
+#Data is normally distributed
+resocto <- residuals(octo)
+qqp(resocto, "norm")
+#
+anova(octo)
+#Model no interaction
+octo1 <- lm(Photosynthesis ~ ColonyDiameter + Treatment, data=octoocta)
+anova(octo1)
+#AICs
+install.packages("AICcmodavg")
+library(AICcmodavg)
+models <- list(octo,octo1)
+aictab(cand.set=models, modnames=c("octo", "octo1"))
+#Best model
+anova(octo)
+#plot
+octopredict <- predict(octo) #did not accept the regular as.data.frame, have to bind this to data
+octograph <- cbind(octoocta, octopredict)
+#
+ggplot(octograph, aes(x=ColonyDiameter, y=Photosynthesis, color=Treatment)) +
+  geom_point(size=2, stat="identity") + 
+  geom_line(aes(y=octopredict)) +
+  scale_color_manual(values=moma.colors("Smith"), labels=c("Control", "Removal")) +
+  labs(x="Stony Coral Diameter (cm)", y="Photosyntheic Rate", title="Presence of Octocorals and Diameter of Stony Coral \nAffect Photosynthetic Rate of Stony Coral") + 
+  theme_minimal()
+
+#--Question 4
+rm(list=ls())
+rumpus <- read_csv("Homeworks/Midterm2/bumpus.csv")
+View(rumpus)
+#Making factors
+rumpus$Survival <- as.factor(rumpus$Survival)
+rumpus$Sex <- as.factor(rumpus$Sex)
+#Normally Distributed
+rumpus1 <- lm(Weight ~ Length * Sex * Survival, data=rumpus)
+summary(rumpus1)
+anova(rumpus1)
+Anova(rumpus1, type="III")
+qqp(rumpus1, "norm")
+#Models with no interaction
+rumpus2 <- lm(Weight ~ Length + Sex + Survival, data=rumpus) #Best with all factors
+rumpus3 <- lm(Weight ~ Sex + Survival, data=rumpus)
+rumpus4 <- lm(Weight ~ Length + Sex, data=rumpus)
+rumpus5 <- lm(Weight ~ Length + Survival, data=rumpus) 
+#Solo models
+rumpus6 <- lm(Weight ~ Length, data=rumpus) #Best model but doesn't answer question
+rumpus7 <- lm(Weight ~ Sex, data=rumpus)
+rumpus8 <- lm(Weight ~ Survival, data=rumpus)
+#Models with interaction
+rumpus9 <- lm(Weight ~ Sex*Survival, data=rumpus)
+rumpus10 <- lm(Weight ~ Length*Sex, data=rumpus)
+rumpus11 <-  lm(Weight ~ Length*Survival, data=rumpus) #Best with interaction
+#
+library(AICcmodavg)
+models <- list(rumpus1, rumpus2, rumpus3, rumpus4, rumpus5, rumpus6, rumpus7, rumpus8, rumpus9, 
+               rumpus10, rumpus11)
+aictab(cand.set=models, modnames=c("rumpus1", "rumpus2", "rumpus3", "rumpus4", "rumpus5", "rumpus6",
+                                   "rumpus7", "rumpus8", "rumpus9", "rumpus10", "rumpus11"))
+#Using best model with all factors
+Anova(rumpus2, type=("III")) #unbalanced data use type 3
+#
+rumpuspredict <- predict(rumpus2)
+rumpgraph <- cbind(rumpus, rumpuspredict)
+#Plot
+Survival.labs <- c("Survived", "Died")
+names(Survival.labs) <- c("TRUE", "FALSE")
+
+ggplot(data=rumpgraph, aes(x=Length, y=Weight, color=Sex, shape=Sex)) +
+  geom_point(size=2) + geom_line(aes(y=rumpuspredict)) +
+  facet_wrap("Survival", labeller = as_labeller(c("TRUE" = "Survived", "FALSE" = "Died"))) +
+  scale_color_manual(values=moma.colors("Smith"), labels=c("f", "m")) +
+  labs(x="Length (cm)", y="Weight (g)", fill="Sex", title= "Length Predicts Weight and Survival of Sparrows") +
+  theme_minimal()
+#--Sacha Medjo-Akono
+#--Midterm 2 - Fall 2024
