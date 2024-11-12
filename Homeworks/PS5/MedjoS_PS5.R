@@ -5,6 +5,10 @@ library(car)
 library(psych)
 library(moments)
 library(lmodel2)
+library(lme4)
+library(pscl)
+library(MoMAColors)
+display.all.moma()
 #--Question 1
 library("pwr")
 #Pwr analysis--a
@@ -60,8 +64,6 @@ anova(Herbmod5, Herbmod6)
 #
 Anova(Herbmod5, type="III")
 #Plot
-library(MoMAColors)
-display.all.moma()
 ggplot(Herb, aes(y=Fruits, x=Range, fill=Range)) + 
   geom_boxplot() + 
   scale_fill_manual(values=moma.colors("Warhol"), labels=c("Invasive", "Native"),
@@ -70,4 +72,27 @@ ggplot(Herb, aes(y=Fruits, x=Range, fill=Range)) +
   labs(y="Fruit production", x="Range", title="Medicago Genotype Affects Fruit Production in Response to \nDisturbance Within Collection Ranges") +
   theme(legend.position="bottom")
 #--Question 3
-
+rm(list=ls())
+surf <- read_csv("Homeworks/PS5/surfperch_mating.csv")
+View(surf)
+#
+qqp(surf$`male size`, "norm") #thank god
+#Binomial model because y/n is 0/1
+surfmod1 <- glm(mated~`male size`, family=binomial(link="logit"), data=surf)
+Anova(surfmod1, type="III")
+pR2(surfmod1)
+#Plot
+to.predict <- data.frame(`male size`=seq(9,22,1), stringsAsFactors = FALSE)
+# Ensure 'male size' is treated correctly
+to.predict <- setNames(to.predict, c("male size"))
+predicted.data <- cbind(to.predict, as.data.frame(predict(surfmod1, newdata=to.predict, type="response", se=TRUE)))
+glimpse(predicted.data)
+#
+ggplot(surf, aes(x=`male size`, y=mated, color=factor(mated))) +
+  geom_point() +
+  geom_line(data = predicted.data, aes(x=`male size`, y=fit), color="black") +
+  scale_color_manual(values=moma.colors("Andri"), labels=c("0", "1"),
+                     name="mated") + 
+  labs(x="Male Size", y="Mating Success", title="Larger Male Surfperches More Successful in Mating") +
+  theme_minimal()
+display.all.moma()
