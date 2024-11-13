@@ -7,6 +7,7 @@ library(moments)
 library(lmodel2)
 library(lme4)
 library(pscl)
+library(factoextra)
 library(MoMAColors)
 display.all.moma()
 #--Question 1
@@ -96,3 +97,5 @@ ggplot(surf, aes(x=`male size`, y=mated, color=factor(mated))) +
   labs(x="Male Size", y="Mating Success", title="Larger Male Surfperches More Successful in Mating") +
   theme_minimal()
 display.all.moma()
+#--Question 4
+#621 fish
