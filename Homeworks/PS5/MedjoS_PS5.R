@@ -98,4 +98,73 @@ ggplot(surf, aes(x=`male size`, y=mated, color=factor(mated))) +
   theme_minimal()
 display.all.moma()
 #--Question 4
-#621 fish
+#There are 621 fish
+rm(list=ls())
+female <- 371
+male <- 250
+
+observed <- matrix(c(female, male), nrow=1, ncol=2)
+
+expected <- matrix(c((female+male)/2, (female+male)/2), nrow=1, ncol=2)
+
+X2test <- sum((observed-expected)^2/expected)
+X2test
+1-pchisq(X2test, df=1)
+#--Question 5
+rm(list=ls())
+wild <- 161
+mutant <- 33
+
+observed <- matrix(c(wild, mutant), nrow=1, ncol=2)
+expected <- matrix(c((wild+mutant)*0.75, (wild+mutant)*0.25), nrow=1, ncol=2)
+#G test
+Gvalue <- 2*sum(observed*log(observed/expected))
+Gvalue 
+1-pchisq(Gvalue, df=1)
+#Chisquared
+X2test <- sum((observed-expected)^2/expected)
+X2test
+1-pchisq(X2test, df=1)
+#--Question 6
+rm(list=ls())
+#Chisquared
+hanging <- matrix(c(58, 33, 61, 21), nrow=2, byrow=TRUE)
+hanging
+colnames(hanging) <- c("Water", "Gatorade")
+rownames(hanging) <- c("No Headache", "Headache")
+
+chi_square_test <- chisq.test(hanging)
+
+chi_square_test
+
+#GLM method
+stpattys <- data.frame(
+  Drink = factor(c(rep("Water", 119), rep("Gatorade", 54))),
+  Headache = factor(c(rep("No", 58), rep("Yes", 61), rep("No", 33), rep("Yes", 21)))
+)
+#GLM Model
+hungover <- glm(Headache ~ Drink, family=binomial, data=stpattys)
+# Summary of the model
+summary(hungover)
+#
+anova(hungover, test="Chisq")
+#--Question 7
+rm(list=ls())
+#GLM model
+Poll <- data.frame(
+  race = c("White", "White", "Black", "Black", "Latino", "Latina", 
+           "White", "White", "Black", "Black", "Latino", "Latina"),
+  sex = c("Men", "Women", "Men", "Women", "Men", "Women", 
+          "Men", "Women", "Men", "Women", "Men", "Women"),
+  candidate = c("Biden", "Biden", "Biden", "Biden", "Biden", "Biden", 
+                "Trump", "Trump", "Trump", "Trump", "Trump", "Trump"),
+  votes = c(2588, 3907, 1007, 1616, 774, 1017, 5177, 5239, 160, 69, 393, 510)
+)
+#
+votemod <- glm(votes~candidate:sex + candidate:race:sex,
+               family=poisson, data=Poll)
+
+# And then use a modified ANOVA, testing against a chi-squared distribution:
+anova(votemod, test="Chisq")
+#--Sacha Medjo-Akono
+#--Problem Set 5 - Fall 2024
