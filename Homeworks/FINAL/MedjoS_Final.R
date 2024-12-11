@@ -17,4 +17,17 @@ display.all.moma()
 rm(list=ls())
 froggy <- read_csv("Homeworks/FINAL/treefrog.csv")
 View(froggy)
+#Normality ok
+qqnorm(froggy$SVL)
+qqline(froggy$SVL)
+qqnorm(froggy$weight)
+qqline(froggy$weight)
 #
+frogmod <- lm(weight~SVL, data=froggy)
+frogmod
+#
+frogres <- resid(frogmod)
+qqp(frogres, "norm")
+#
+plot(frogres~fitted(frogmod)) #not a cone :)
+summary(frogmod)
