@@ -33,6 +33,7 @@ qqp(frogres, "norm")
 #
 plot(frogres~fitted(frogmod)) #not a cone :)
 summary(frogmod)
+
 #--Question 2
 #There are 214 dead animals
 rm(list=ls())
@@ -50,6 +51,7 @@ Gvalue #is 2.69726
 X2test <- sum((observed-expected)^2/expected)
 X2test # is 2.691589
 1-pchisq(X2test, df=1) #p-value = 0.1008792
+
 #--Question 3
 rm(list=ls())
 ana <- read_csv("Homeworks/FINAL/anorexia.csv")
@@ -87,6 +89,7 @@ ggplot(ana, aes(y=WeightChange, x=Treatment, fill=Treatment)) +
     plot.title = element_text(hjust = 0.5)) +
   geom_signif(data=ana,stat="signif",position="identity",
               comparisons=list(c("Control","Therapy")),map_signif_level = TRUE,annotations="*")
+
 #--Question 4
 rm(list=ls())
 Bass <- read_csv("Homeworks/FINAL/habitats.csv")
@@ -148,6 +151,7 @@ resid2 <- residuals(basslogmod)
 
 anova(basslogmod)
 anova(bassmod)
+
 #--Question 5
 rm(list=ls())
 dillo <- read_csv("Homeworks/FINAL/armadillos.csv")
@@ -175,19 +179,20 @@ ggplot(dillo, aes(x=GrainSize, y=Burrows)) +
   geom_point() +
   geom_line(data = predicted.data, aes(x=GrainSize, y=fit), color="palevioletred") +
   labs(x="Soil Grain Size", y="Presence of Armadillo Burrow",
-       title="Armadillos Favor Larger Soil Grain Size for Burrowing") +
+       title="Armadillos Slightly Favor Larger Soil Grain Size for Burrowing") +
   theme_minimal()
 #
 to.predict <- data.frame(PA_ratio=seq(5,65,5))
 predicted.data <- cbind(to.predict, as.data.frame(predict(model1, newdata=to.predict, type="response", se=TRUE)))
-
+#
 glimpse(predicted.data)
-
+#
 ggplot(lizards, aes(x=PA_ratio, y=Present)) +
   geom_point() +
   geom_line(data = predicted.data, aes(x=PA_ratio, y=fit), color="blue") +
   labs(x="Perimeter:Area Ratio", y="Presence of Lizards") +
   theme_bw() 
+
 #--Question 6
 rm(list=ls())
 fcancer <- read_csv("Homeworks/FINAL/cancerdrug.csv")
@@ -207,9 +212,58 @@ plot(cancerlogmod)
 cancerlogmodres <- residuals(cancerlogmod)
 qqnorm(cancerlogmodres)
 qqline(cancerlogmodres)
+qqp(cancerlogmodres, "norm")
 #
 AIC(cancerlogmod)
 AIC(fcancer1)
 #
 summary(cancerlogmod)
 summary(fcancer1)
+#
+anova(fcancer1)
+anova(cancerlogmod)
+#
+library("emmeans")
+emmeans(fcancer1, pairwise~"treatment", adjust="Tukey")
+TukeyHSD(aov(fcancer1))#bunch of zeros
+#
+library("agricolae")
+HSD.test(fcancer1, "treatment", console=TRUE)
+
+#--Question 7
+rm(list=ls())
+turtle <- read_csv("Homeworks/FINAL/SeaTurtle.csv")
+glimpse(turtle)
+#ANCOVA looking at site, body size etc. 
+#Make factors
+turtle$Site <- as.factor(turtle$Site) #discrete
+turtle$Size <- as.numeric(turtle$Size) #continuous
+#
+turtlemod1 <- lm(Eggs~Site*Size, data=turtle)
+#plot(turtlemod1)
+plot(Eggs~Size, data=turtle)
+anova(turtlemod1) #design is balanced we stop here
+#
+turtlemod2 <- lm(Eggs~Site+Size, data=turtle)
+anova(turtlemod2)
+turtlemod3 <- lm(Eggs~Site:Size, data=turtle)
+anova(turtlemod3)
+AIC(turtlemod1)#better for question
+AIC(turtlemod2)#best model but no interaction
+AIC(turtlemod3)
+#
+Anova(turtlemod1, type="III")
+Anova(turtlemod2, type="III")
+#
+eggpred <- predict(turtlemod1)
+plurtle <- cbind(turtle, eggpred)
+#Plot
+ggplot(data=plurtle, aes(x=Size, y=Eggs, color=Site)) +
+  geom_point() +
+  geom_line(aes(y=eggpred)) +
+  labs(x="Carapace Length", y="Eggs", fill="Site",
+       title="No Observed Effect of Size and Location on\n Green Sea Turtle per-capita Reproductive Output") +
+  scale_color_manual(values=moma.colors("Andri"), labels=c("Bahamas", "Florida", "NorthCarolina")) + 
+  theme_minimal()
+#--Sacha Medjo-Akono
+#--Final Exam - Fall 2024
