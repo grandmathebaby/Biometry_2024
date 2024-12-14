@@ -188,3 +188,28 @@ ggplot(lizards, aes(x=PA_ratio, y=Present)) +
   geom_line(data = predicted.data, aes(x=PA_ratio, y=fit), color="blue") +
   labs(x="Perimeter:Area Ratio", y="Presence of Lizards") +
   theme_bw() 
+#--Question 6
+rm(list=ls())
+fcancer <- read_csv("Homeworks/FINAL/cancerdrug.csv")
+glimpse(fcancer)
+#
+class(fcancer$treatment) #character
+#
+fcancer1 <- lm(cell.growth ~ treatment, data=fcancer)
+plot(fcancer1)
+fcanceres <- residuals(fcancer1)
+qqp(fcanceres, "norm")
+#
+cancerlog <- log(fcancer$cell.growth)
+cancerlogmod <- lm(cancerlog ~ treatment, data=fcancer)
+plot(cancerlogmod)
+#
+cancerlogmodres <- residuals(cancerlogmod)
+qqnorm(cancerlogmodres)
+qqline(cancerlogmodres)
+#
+AIC(cancerlogmod)
+AIC(fcancer1)
+#
+summary(cancerlogmod)
+summary(fcancer1)
